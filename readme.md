@@ -161,3 +161,98 @@ Type 选择 Basic Auth。
 Username 输入 user (这是默认用户名)。
 Password 输入您在控制台看到的那一长串随机密码。
 现在再发送请求，就可以成功访问了。
+
+6.17.02:01
+测试公共接口 (用户注册)
+根据我们的安全配置，用户注册接口 POST /api/users 是唯一允许匿名访问的接口。
+
+目的: 验证任何人都可以调用此接口创建新用户。
+请求:
+Method: POST
+URL: http://localhost:8080/api/users
+Headers: Content-Type: application/json
+Body (raw, JSON):
+JSON
+
+{
+"username": "testuser",
+"password": "password123",
+"nickname": "测试用户",
+"phoneNumber": "13012345678",
+"email": "testuser@example.com",
+"gender": 1,
+"userType": 1,
+"companyId": 1,
+"companyRole": 1,
+"status": 1
+}
+预期结果:
+Status Code: 201 Created
+Response Body: 返回创建成功的用户信息，不包含密码。
+2. 测试未认证访问受保护接口
+   在未登录的情况下，尝试访问需要认证的接口。
+
+目的: 验证 Spring Security 成功拦截了未认证的请求。
+请求:
+Method: GET
+URL: http://localhost:8080/api/users/me
+预期结果:
+由于我们启用了 formLogin，对于非浏览器客户端（如 Postman），Spring Security 通常会返回 401 Unauthorized 或 403 Forbidden。你也可能会看到一个指向登录页面的 HTML 响应。这证明了接口受到了保护。
+3. 测试登录接口
+   现在，我们使用第一步中创建的用户进行登录。Spring Security 的 formLogin 默认提供 /login 端点。
+
+目的: 验证用户能成功登录，并获取会话 Cookie (JSESSIONID)。
+请求:
+Method: POST
+URL: http://localhost:8080/login
+Body (选择 x-www-form-urlencoded 类型):
+username: testuser
+password: password123
+预期结果:
+Status Code: 200 OK 或 302 Found (重定向)。
+Headers: Postman 会在响应的 Set-Cookie 头中收到一个 JSESSIONID。Postman 会自动保存这个 Cookie 用于后续请求。
+4. 测试认证后访问受保护接口 (核心验证)
+   登录成功后，我们再次访问之前被拒绝的 /api/users/me 接口。
+
+目的: 验证登录会话有效，并且可以从 Principal 中正确获取 SysUser 信息。
+请求:
+Method: GET
+URL: http://localhost:8080/api/users/me
+预期结果:
+Status Code: 200 OK
+Response Body: 返回 testuser 的完整用户信息（DTO 格式），与第一步中创建的信息一致。
+JSON
+
+{
+"id": 5, // ID 可能是自增的
+"username": "testuser",
+"nickname": "测试用户",
+"phoneNumber": "13012345678",
+"email": "testuser@example.com",
+"gender": 1,
+"userType": 1,
+"companyId": 1,
+"companyRole": 1,
+"status": 1,
+"createdAt": "..."
+}
+5. 测试其他受保护的 CRUD 接口
+   在保持登录状态下，测试其他的用户管理接口。
+
+目的: 验证其他受保护的业务接口在认证后均可正常工作。
+获取用户列表:
+Method: GET
+URL: http://localhost:8080/api/users?pageNum=1&pageSize=5
+预期: 返回 200 OK 和用户分页数据。
+更新用户信息:
+Method: PUT
+URL: http://localhost:8080/api/users/2 (假设更新ID为2的用户)
+Body (raw, JSON):
+JSON
+
+{
+"nickname": "张三-已更新",
+"companyRole": 2
+}
+预期: 返回 200 OK 和更新后的用户信息。
+通过以上测试用例，你可以全面地验证 Spring Security 配置的正确性，确保接口安全，并确认 SysUser 对象已成功作为身份主体（Principal）在应用中传递。
