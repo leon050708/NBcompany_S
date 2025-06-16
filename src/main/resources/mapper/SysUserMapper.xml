@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.nbcompany.dao.SysUserDao">
+
+    <resultMap id="BaseResultMap" type="org.example.nbcompany.entity.SysUser">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="nickname" column="nickname" />
+        <result property="phoneNumber" column="phone_number" />
+        <result property="email" column="email" />
+        <result property="gender" column="gender" />
+        <result property="userType" column="user_type" />
+        <result property="companyId" column="company_id" />
+        <result property="companyRole" column="company_role" />
+        <result property="status" column="status" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, username, password, nickname, phone_number, email, gender, user_type, company_id, company_role, status, created_at, updated_at
+    </sql>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user WHERE id = #{id}
+    </select>
+
+    <select id="findByUsername" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user WHERE username = #{username}
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user ORDER BY id DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user
+        (username, password, nickname, phone_number, email, gender, user_type, company_id, company_role, status, created_at, updated_at)
+        VALUES
+            (#{username}, #{password}, #{nickname}, #{phoneNumber}, #{email}, #{gender}, #{userType}, #{companyId}, #{companyRole}, #{status}, NOW(), NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE sys_user
+        <set>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyRole != null">company_role = #{companyRole},</if>
+            <if test="status != null">status = #{status},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM sys_user WHERE id = #{id}
+    </delete>
+
+</mapper>
