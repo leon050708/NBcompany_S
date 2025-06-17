@@ -34,6 +34,50 @@
         SELECT <include refid="Base_Column_List" /> FROM sys_user ORDER BY id DESC
     </select>
 
+    <select id="findUsersByCriteria" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_user
+        <where>
+            <if test="companyId != null">
+                AND company_id = #{companyId}
+            </if>
+            <if test="companyRole != null">
+                AND company_role = #{companyRole}
+            </if>
+            <if test="userType != null">
+                AND user_type = #{userType}
+            </if>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                AND phone_number LIKE CONCAT('%', #{phoneNumber}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="findCompanyMembers" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM sys_user
+        <where>
+            AND company_id = #{companyId}
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="companyRole != null">
+                AND company_role = #{companyRole}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sys_user
         (username, password, nickname, phone_number, email, gender, user_type, company_id, company_role, status, created_at, updated_at)
@@ -44,13 +88,11 @@
     <update id="update">
         UPDATE sys_user
         <set>
-            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="password != null and password != ''">password = #{password},</if> <if test="nickname != null">nickname = #{nickname},</if>
             <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
             <if test="email != null">email = #{email},</if>
             <if test="gender != null">gender = #{gender},</if>
-            <if test="companyId != null">company_id = #{companyId},</if>
-            <if test="companyRole != null">company_role = #{companyRole},</if>
-            <if test="status != null">status = #{status},</if>
+            <if test="userType != null">user_type = #{userType},</if> <if test="companyId != null">company_id = #{companyId},</if> <if test="companyRole != null">company_role = #{companyRole},</if> <if test="status != null">status = #{status},</if>
             updated_at = NOW()
         </set>
         WHERE id = #{id}

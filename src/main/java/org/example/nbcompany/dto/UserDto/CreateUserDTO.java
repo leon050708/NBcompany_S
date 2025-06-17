@@ -1,4 +1,4 @@
-package org.example.nbcompany.dto;
+package org.example.nbcompany.dto.UserDto;
 
 import lombok.Data;
 
