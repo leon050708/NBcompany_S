@@ -1,7 +1,8 @@
 package org.example.nbcompany.security;
 
-import org.example.nbcompany.dao.SysUserDao;
+import org.example.nbcompany.dao.SysUserMapper;
 import org.example.nbcompany.entity.SysUser;
+import org.example.nbcompany.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -12,15 +13,14 @@ import org.springframework.stereotype.Component;
 public class PermissionEvaluator {
 
     @Autowired
-    private SysUserDao sysUserDao;
+    private SysUserMapper sysUserMapper;
 
     // 检查当前认证用户是否是指定 companyId 的企业管理员
     public boolean isCompanyAdminForCompany(Long companyId, Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+        SysUser currentUser = UserContext.getCurrentUser();
+        if (currentUser == null) {
             return false;
         }
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        SysUser currentUser = userDetails.getSysUser();
 
         // 确保是企业用户，并且是企业管理员，且 companyId 匹配
         return currentUser.getUserType() == 1 && // 企业用户
@@ -31,11 +31,10 @@ public class PermissionEvaluator {
 
     // 检查企业管理员是否可以修改或删除某个成员
     public boolean canEditCompanyMember(Long companyId, Long memberId, Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+        SysUser currentUser = UserContext.getCurrentUser();
+        if (currentUser == null) {
             return false;
         }
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        SysUser currentUser = userDetails.getSysUser();
 
         // 1. 确保当前用户是该企业的管理员
         if (!isCompanyAdminForCompany(companyId, authentication)) {
@@ -43,7 +42,7 @@ public class PermissionEvaluator {
         }
 
         // 2. 获取目标成员信息
-        SysUser targetMember = sysUserDao.findById(memberId);
+        SysUser targetMember = sysUserMapper.selectById(memberId);
         if (targetMember == null) {
             return false; // 目标成员不存在
         }
