@@ -1,63 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.nbcompany.dao.SysCompanyDao">
-
+<mapper namespace="org.example.nbcompany.dao.SysCompanyMapper">
     <resultMap id="BaseResultMap" type="org.example.nbcompany.entity.SysCompany">
-        <id property="id" column="id" />
-        <result property="companyName" column="company_name" />
-        <result property="contactPerson" column="contact_person" />
-        <result property="contactPhone" column="contact_phone" />
-        <result property="contactEmail" column="contact_email" />
-        <result property="status" column="status" />
-        <result property="createdAt" column="created_at" />
-        <result property="updatedAt" column="updated_at" />
+        <id column="id" property="id"/>
+        <result column="company_name" property="companyName"/>
+        <result column="contact_person" property="contactPerson"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="contact_email" property="contactEmail"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
     </resultMap>
 
-    <sql id="Base_Column_List">
-        id, company_name, contact_person, contact_phone, contact_email, status, created_at, updated_at
-    </sql>
+    <insert id="insert" parameterType="org.example.nbcompany.entity.SysCompany" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_company (
+            company_name, contact_person, contact_phone, contact_email,
+            status, created_at, updated_at
+        ) VALUES (
+            #{companyName}, #{contactPerson}, #{contactPhone}, #{contactEmail},
+            #{status}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
 
-    <select id="findById" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" /> FROM sys_company WHERE id = #{id}
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM sys_company WHERE id = #{id}
     </select>
 
-    <select id="findByCompanyName" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" /> FROM sys_company WHERE company_name = #{companyName}
-    </select>
+    <update id="updateById" parameterType="org.example.nbcompany.entity.SysCompany">
+        UPDATE sys_company
+        SET company_name = #{companyName},
+            contact_person = #{contactPerson},
+            contact_phone = #{contactPhone},
+            contact_email = #{contactEmail},
+            status = #{status},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
 
-    <select id="findAllCompanies" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List" />
-        FROM sys_company
+    <select id="selectByKeyword" resultMap="BaseResultMap">
+        SELECT * FROM sys_company
         <where>
             <if test="keyword != null and keyword != ''">
                 AND company_name LIKE CONCAT('%', #{keyword}, '%')
             </if>
         </where>
-        ORDER BY id DESC
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{limit}
     </select>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO sys_company
-        (company_name, contact_person, contact_phone, contact_email, status, created_at, updated_at)
-        VALUES
-            (#{companyName}, #{contactPerson}, #{contactPhone}, #{contactEmail}, #{status}, NOW(), NOW())
-    </insert>
-
-    <update id="update">
-        UPDATE sys_company
-        <set>
-            <if test="companyName != null">company_name = #{companyName},</if>
-            <if test="contactPerson != null">contact_person = #{contactPerson},</if>
-            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
-            <if test="contactEmail != null">contact_email = #{contactEmail},</if>
-            <if test="status != null">status = #{status},</if>
-            updated_at = NOW()
-        </set>
-        WHERE id = #{id}
-    </update>
-
-    <delete id="deleteById">
-        DELETE FROM sys_company WHERE id = #{id}
-    </delete>
-
-</mapper>
+    <select id="countByKeyword" resultType="long">
+        SELECT COUNT(*) FROM sys_company
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND company_name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+    </select>
+</mapper> 

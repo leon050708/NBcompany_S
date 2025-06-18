@@ -1,19 +1,12 @@
 package org.example.nbcompany.service;
 
-import com.github.pagehelper.PageInfo;
-import org.example.nbcompany.dto.CompanyDto.CompanyDTO;
-import org.example.nbcompany.dto.UserDto.RegisterCompanyDTO;
-import org.example.nbcompany.dto.UserDto.UpdateCompanyStatusDTO;
+import org.example.nbcompany.dto.request.CompanyRegisterRequest;
+import org.example.nbcompany.dto.response.CompanyRegisterResponse;
+import org.example.nbcompany.dto.response.PageResponse;
+import org.example.nbcompany.entity.SysCompany;
 
 public interface CompanyService {
-
-    CompanyDTO registerCompany(RegisterCompanyDTO registerCompanyDTO);
-
-    PageInfo<CompanyDTO> getAllCompanies(String keyword, int pageNum, int pageSize);
-
-    CompanyDTO getCompanyById(Long id);
-
-    void updateCompanyStatus(Long companyId, UpdateCompanyStatusDTO updateCompanyStatusDTO);
-
-    void deleteCompany(Long companyId); // 酌情添加，通常企业不直接删除
-}
+    CompanyRegisterResponse register(CompanyRegisterRequest request);
+    PageResponse<SysCompany> listCompanies(String keyword, int page, int size);
+    void updateCompanyStatus(Long companyId, Integer status);
+} 

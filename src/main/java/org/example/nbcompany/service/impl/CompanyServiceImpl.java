@@ -1,93 +1,62 @@
 package org.example.nbcompany.service.impl;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import org.example.nbcompany.dao.SysCompanyDao;
-import org.example.nbcompany.dto.CompanyDto.CompanyDTO;
-import org.example.nbcompany.dto.UserDto.RegisterCompanyDTO;
-import org.example.nbcompany.dto.UserDto.UpdateCompanyStatusDTO;
+import org.example.nbcompany.dao.SysCompanyMapper;
+import org.example.nbcompany.dto.request.CompanyRegisterRequest;
+import org.example.nbcompany.dto.response.CompanyRegisterResponse;
+import org.example.nbcompany.dto.response.PageResponse;
 import org.example.nbcompany.entity.SysCompany;
 import org.example.nbcompany.service.CompanyService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
-    private SysCompanyDao sysCompanyDao;
+    private SysCompanyMapper companyMapper;
 
     @Override
     @Transactional
-    public CompanyDTO registerCompany(RegisterCompanyDTO registerCompanyDTO) {
-        // 检查企业名称是否已存在
-        if (sysCompanyDao.findByCompanyName(registerCompanyDTO.getCompanyName()) != null) {
-            throw new RuntimeException("企业名称已存在");
-        }
+    public CompanyRegisterResponse register(CompanyRegisterRequest request) {
+        SysCompany company = new SysCompany();
+        company.setCompanyName(request.getCompanyName());
+        company.setContactPerson(request.getContactPerson());
+        company.setContactPhone(request.getContactPhone());
+        company.setContactEmail(request.getContactEmail());
+        company.setStatus(0); // 待审核状态
+        company.setCreatedAt(LocalDateTime.now());
+        company.setUpdatedAt(LocalDateTime.now());
 
-        SysCompany sysCompany = new SysCompany();
-        BeanUtils.copyProperties(registerCompanyDTO, sysCompany);
-        sysCompany.setStatus(0); // 新注册企业状态为0 (待审核)
-        sysCompanyDao.insert(sysCompany);
+        companyMapper.insert(company);
 
-        CompanyDTO companyDTO = new CompanyDTO();
-        BeanUtils.copyProperties(sysCompany, companyDTO);
-        return companyDTO;
+        CompanyRegisterResponse response = new CompanyRegisterResponse();
+        response.setCompanyId(company.getId());
+        response.setCompanyName(company.getCompanyName());
+        return response;
     }
 
     @Override
-    public PageInfo<CompanyDTO> getAllCompanies(String keyword, int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<SysCompany> companyList = sysCompanyDao.findAllCompanies(keyword);
-        PageInfo<SysCompany> companyPageInfo = new PageInfo<>(companyList);
-
-        List<CompanyDTO> companyDTOList = companyList.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-
-        PageInfo<CompanyDTO> companyDtoPageInfo = new PageInfo<>();
-        BeanUtils.copyProperties(companyPageInfo, companyDtoPageInfo);
-        companyDtoPageInfo.setList(companyDTOList);
-        return companyDtoPageInfo;
-    }
-
-    @Override
-    public CompanyDTO getCompanyById(Long id) {
-        SysCompany sysCompany = sysCompanyDao.findById(id);
-        if (sysCompany == null) {
-            return null;
-        }
-        return convertToDto(sysCompany);
+    public PageResponse<SysCompany> listCompanies(String keyword, int page, int size) {
+        PageResponse<SysCompany> response = new PageResponse<>();
+        response.setCurrent(page);
+        response.setRecords(companyMapper.selectByKeyword(keyword, (page - 1) * size, size));
+        response.setTotal(companyMapper.countByKeyword(keyword));
+        response.setPages((int) Math.ceil((double) response.getTotal() / size));
+        return response;
     }
 
     @Override
     @Transactional
-    public void updateCompanyStatus(Long companyId, UpdateCompanyStatusDTO updateCompanyStatusDTO) {
-        SysCompany existingCompany = sysCompanyDao.findById(companyId);
-        if (existingCompany == null) {
+    public void updateCompanyStatus(Long companyId, Integer status) {
+        SysCompany company = companyMapper.selectById(companyId);
+        if (company == null) {
             throw new RuntimeException("企业不存在");
         }
-        existingCompany.setStatus(updateCompanyStatusDTO.getStatus());
-        sysCompanyDao.update(existingCompany);
+        company.setStatus(status);
+        company.setUpdatedAt(LocalDateTime.now());
+        companyMapper.updateById(company);
     }
-
-    @Override
-    @Transactional
-    public void deleteCompany(Long companyId) {
-        if (sysCompanyDao.findById(companyId) == null) {
-            throw new RuntimeException("企业不存在");
-        }
-        sysCompanyDao.deleteById(companyId);
-    }
-
-    private CompanyDTO convertToDto(SysCompany sysCompany) {
-        CompanyDTO companyDTO = new CompanyDTO();
-        BeanUtils.copyProperties(sysCompany, companyDTO);
-        return companyDTO;
-    }
-}
+} 
