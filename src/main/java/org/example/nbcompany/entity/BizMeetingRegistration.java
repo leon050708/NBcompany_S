@@ -1,5 +1,6 @@
 package org.example.nbcompany.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class BizMeetingRegistration implements Serializable {
     private String arrivalTrainNo;
 
     /** 到达时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivalTime;
 
     /** 注册时间 */

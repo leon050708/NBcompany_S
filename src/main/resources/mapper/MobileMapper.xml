@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.nbcompany.dao.MobileMapper">
+
+    <!-- 查询合作模块列表 -->
+    <select id="getCollaborations" resultType="org.example.nbcompany.entity.BizCollaboration">
+        SELECT id, category, title, summary, externalLink
+        FROM biz_collaborations
+        <where>
+            <if test="category != null">
+                AND category = #{category}
+            </if>
+        </where>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 查询总记录数 -->
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*) FROM biz_collaborations
+        <where>
+            <if test="category != null">
+                 category = #{category}
+            </if>
+        </where>
+    </select>
+
+    <!--查询会议详细信息-->
+    <select id="findByMeetingId" resultType="org.example.nbcompany.entity.BizMeeting">
+        SELECT * FROM biz_meeting WHERE id = #{id}
+    </select>
+
+    <!-- 插入新的会议注册回执 -->
+    <insert id="insert" parameterType="org.example.nbcompany.entity.BizMeetingRegistration"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO biz_meeting_registration
+        (meeting_id, user_id, company, name, gender, phone_number, email,
+         arrival_method, arrival_train_no, arrival_time, registration_at)
+        VALUES
+            (#{meetingId}, #{userId}, #{company}, #{name}, #{gender}, #{phoneNumber}, #{email},
+             #{arrivalMethod}, #{arrivalTrainNo}, #{arrivalTime}, #{registeredAt})
+    </insert>
+
+    <!--根据会议ID和用户ID查询回执，用于检查是否重复提交-->
+    <select id="findByMeetingIdAndUserId" resultType="org.example.nbcompany.entity.BizMeetingRegistration">
+        SELECT * FROM biz_meeting_registration
+        WHERE meeting_id = #{meetingId} AND user_id = #{userId}
+    </select>
+
+    <select id="findByCollaborationId" resultType="org.example.nbcompany.entity.BizCollaboration">
+        SELECT id, category,title,summary,content,external_link FROM biz_collaboration WHERE id = #{collaborationId}
+    </select>
+
+
+</mapper>
