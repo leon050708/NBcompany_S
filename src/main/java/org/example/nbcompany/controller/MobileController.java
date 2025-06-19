@@ -7,8 +7,6 @@ import org.example.nbcompany.entity.BizMeeting;
 import org.example.nbcompany.entity.BizMeetingRegistration;
 import org.example.nbcompany.service.impl.MobileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController("/api/v1/mobile")
@@ -40,7 +38,7 @@ public class MobileController {
         return ApiResponse.success("获取成功", meeting);
     }
 
-    @PostMapping("/collaborations/meeting/{meetingId}")
+    @PostMapping("meetings/{meetingId}/register")
     public ApiResponse<Void> registerForMeeting(@PathVariable Long meetingId ,@RequestBody BizMeetingRegistration registration) {
 
         try {

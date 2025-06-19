@@ -8,7 +8,7 @@ import org.example.nbcompany.entity.BizMeetingRegistration;
 
 public interface MobileService {
 
-    public PageResponse<BizCollaboration> listCollaboration(Integer category, int page, int size);
+    PageResponse<BizCollaboration> listCollaboration(Integer category, int page, int size);
 
     BizMeeting getMeeting(Long meetingId);
 
