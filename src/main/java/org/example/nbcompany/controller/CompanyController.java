@@ -2,17 +2,14 @@ package org.example.nbcompany.controller;
 
 import org.example.nbcompany.dto.request.CompanyMemberRoleRequest;
 import org.example.nbcompany.dto.response.*;
-import org.example.nbcompany.entity.SysCompany;
 import org.example.nbcompany.entity.SysUser;
 import org.example.nbcompany.service.CompanyService;
 import org.example.nbcompany.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/company")
 public class CompanyController {
 
     @Autowired
@@ -21,18 +18,7 @@ public class CompanyController {
     @Autowired
     private UserService userService;
 
-    // 公开接口：获取企业列表
-    @GetMapping("/companies")
-    public ApiResponse<PageResponse<SysCompany>> listCompanies(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        PageResponse<SysCompany> response = companyService.listCompanies(keyword, page, size);
-        return ApiResponse.success("获取成功", response);
-    }
-
-    // 企业成员管理接口
-    @GetMapping("/company/{companyId}/members")
+    @GetMapping("/{companyId}/members")
     public ApiResponse<PageResponse<SysUser>> listCompanyMembers(
             @PathVariable Long companyId,
             @RequestParam(required = false) String username,
@@ -45,14 +31,14 @@ public class CompanyController {
         return ApiResponse.success("获取成功", response);
     }
 
-    @PostMapping("/company/{companyId}/members")
+    @PostMapping("/{companyId}/members")
     public ApiResponse<Void> createCompanyMember(@PathVariable Long companyId,
                                                @RequestBody SysUser user) {
         userService.createCompanyMember(companyId, user);
         return ApiResponse.success("成员创建成功", null);
     }
 
-    @PutMapping("/company/{companyId}/members/{memberId}/role")
+    @PutMapping("/{companyId}/members/{memberId}/role")
     public ApiResponse<Void> updateCompanyMemberRole(
             @PathVariable Long companyId,
             @PathVariable Long memberId,
@@ -61,7 +47,7 @@ public class CompanyController {
         return ApiResponse.success("成员权限修改成功", null);
     }
 
-    @PutMapping("/company/{companyId}/members/{memberId}")
+    @PutMapping("/{companyId}/members/{memberId}")
     public ApiResponse<Void> updateCompanyMember(
             @PathVariable Long companyId,
             @PathVariable Long memberId,
@@ -70,7 +56,7 @@ public class CompanyController {
         return ApiResponse.success("成员信息修改成功", null);
     }
 
-    @DeleteMapping("/company/{companyId}/members/{memberId}")
+    @DeleteMapping("/{companyId}/members/{memberId}")
     public ApiResponse<Void> deleteCompanyMember(
             @PathVariable Long companyId,
             @PathVariable Long memberId) {
