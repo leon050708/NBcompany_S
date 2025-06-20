@@ -1,9 +1,11 @@
 package org.example.nbcompany.controller;
 
 import org.example.nbcompany.dto.request.CompanyStatusRequest;
+import org.example.nbcompany.dto.request.UpdateMeetingStatusRequest;
 import org.example.nbcompany.dto.response.*;
 import org.example.nbcompany.entity.SysUser;
 import org.example.nbcompany.service.CompanyService;
+import org.example.nbcompany.service.MeetingService;
 import org.example.nbcompany.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,10 @@ public class AdminController {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private MeetingService meetingService;
+
 
     @GetMapping("/users")
     public ApiResponse<PageResponse<SysUser>> listUsers(
@@ -50,5 +56,15 @@ public class AdminController {
                                                @RequestBody CompanyStatusRequest request) {
         companyService.updateCompanyStatus(companyId, request.getStatus());
         return ApiResponse.success("企业状态修改成功", null);
+    }
+
+    @PutMapping("/meetings/{meetingId}/status")
+    public ApiResponse<Void> updateMeetingStatus(
+            @PathVariable Long meetingId,
+            @RequestBody UpdateMeetingStatusRequest request,
+            @RequestAttribute Long userId
+    ) {
+        meetingService.updateMeetingStatus(meetingId, request.getStatus(), userId);
+        return ApiResponse.success("会议审核成功", null);
     }
 } 

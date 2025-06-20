@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.nbcompany.dao.BizMeetingMapper">
+
+    <resultMap id="MeetingResultMap" type="org.example.nbcompany.entity.BizMeeting">
+        <id column="id" property="id"/>
+        <result column="meeting_name" property="meetingName"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="cover_image_url" property="coverImageUrl"/>
+        <result column="content" property="content"/>
+        <result column="location" property="location"/>
+        <result column="organizer" property="organizer"/>
+        <result column="agenda" property="agenda"/>
+        <result column="speakers" property="speakers"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="creator_name" property="creatorName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, meeting_name, start_time, end_time, cover_image_url, content, location,
+        organizer, agenda, speakers, creator_id, creator_name, company_id, status,
+        created_at, updated_at
+    </sql>
+
+    <select id="selectByConditions" resultMap="MeetingResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM biz_meeting
+        <where>
+            <if test="meetingName != null and meetingName != ''">
+                AND meeting_name LIKE CONCAT('%', #{meetingName}, '%')
+            </if>
+            <if test="creatorName != null and creatorName != ''">
+                AND creator_name LIKE CONCAT('%', #{creatorName}, '%')
+            </if>
+            <if test="companyId != null">
+                AND company_id = #{companyId}
+            </if>
+            <if test="startDate != null">
+                AND start_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND end_time &lt;= #{endDate}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY start_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countByConditions" resultType="long">
+        SELECT COUNT(*)
+        FROM biz_meeting
+        <where>
+            <if test="meetingName != null and meetingName != ''">
+                AND meeting_name LIKE CONCAT('%', #{meetingName}, '%')
+            </if>
+            <if test="creatorName != null and creatorName != ''">
+                AND creator_name LIKE CONCAT('%', #{creatorName}, '%')
+            </if>
+            <if test="companyId != null">
+                AND company_id = #{companyId}
+            </if>
+            <if test="startDate != null">
+                AND start_time >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND end_time &lt;= #{endDate}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="selectById" resultMap="MeetingResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            biz_meeting
+        WHERE
+            id = #{id}
+     </select>
+
+    <insert id="insert" parameterType="org.example.nbcompany.entity.BizMeeting" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO biz_meeting (
+            meeting_name, start_time, end_time, cover_image_url, content, location,
+            organizer, agenda, speakers, creator_id, creator_name, company_id,
+            status, created_at, updated_at
+        ) VALUES (
+                     #{meetingName}, #{startTime}, #{endTime}, #{coverImageUrl}, #{content}, #{location},
+                     #{organizer}, #{agenda}, #{speakers}, #{creatorId}, #{creatorName}, #{companyId},
+                     #{status}, #{createdAt}, #{updatedAt}
+                 )
+    </insert>
+
+    <update id="update" parameterType="org.example.nbcompany.entity.BizMeeting">
+            UPDATE biz_meeting
+            SET
+                meeting_name = #{meetingName},
+                start_time = #{startTime},
+                end_time = #{endTime},
+                cover_image_url = #{coverImageUrl},
+                content = #{content},
+                location = #{location},
+                organizer = #{organizer},
+                agenda = #{agenda},
+                speakers = #{speakers},
+                updated_at = #{updatedAt}
+            WHERE
+                id = #{id}
+    </update>
+
+    <delete id="deleteById">
+            DELETE FROM biz_meeting WHERE id =#{id}
+    </delete>
+
+    <update id="updateStatus">
+        UPDATE biz_meeting
+        SET
+            status = #{status},
+            updated_at = NOW()
+        WHERE
+            id = #{id}
+    </update>
+
+</mapper>
