@@ -50,4 +50,11 @@ public interface CourseService {
      * @return 审核后的课程详情
      */
     CourseDetailDTO auditCourse(CourseAuditDTO courseAuditDTO);
+
+    /**
+     * 导出课程列表到Excel
+     * @param queryDTO 查询条件
+     * @return Excel文件的字节数组
+     */
+    byte[] exportCourseListToExcel(CourseQueryDTO queryDTO);
 }
