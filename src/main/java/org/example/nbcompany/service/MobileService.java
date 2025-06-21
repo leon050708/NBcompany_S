@@ -2,7 +2,6 @@ package org.example.nbcompany.service;
 
 import org.example.nbcompany.dto.response.MobileBizCollaborationResponse;
 import org.example.nbcompany.dto.response.PageResponse;
-import org.example.nbcompany.entity.BizCollaboration;
 import org.example.nbcompany.entity.BizMeeting;
 import org.example.nbcompany.entity.BizMeetingRegistration;
 
@@ -16,4 +15,5 @@ public interface MobileService {
     void registerForMeeting(Long meetingId, BizMeetingRegistration registration, Long userId);
 
     MobileBizCollaborationResponse getCollaboration(Long collaborationId);
+
 }

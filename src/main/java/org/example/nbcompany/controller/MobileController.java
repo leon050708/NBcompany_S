@@ -3,7 +3,6 @@ package org.example.nbcompany.controller;
 import org.example.nbcompany.dto.response.ApiResponse;
 import org.example.nbcompany.dto.response.MobileBizCollaborationResponse;
 import org.example.nbcompany.dto.response.PageResponse;
-import org.example.nbcompany.entity.BizCollaboration;
 import org.example.nbcompany.entity.BizMeeting;
 import org.example.nbcompany.entity.BizMeetingRegistration;
 import org.example.nbcompany.service.impl.MobileService;
@@ -68,7 +67,6 @@ public class MobileController {
         // 成功找到，返回成功响应和数据
         return ApiResponse.success("获取成功", collaborationDetails);
     }
-
 
 }
 
