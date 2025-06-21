@@ -65,5 +65,4 @@ public class MobileService implements org.example.nbcompany.service.MobileServic
         return collaboration;
     }
 
-
 }
