@@ -1,8 +1,8 @@
 package org.example.nbcompany.service.impl;
 
 import org.example.nbcompany.dao.MobileMapper;
+import org.example.nbcompany.dto.response.MobileBizCollaborationResponse;
 import org.example.nbcompany.dto.response.PageResponse;
-import org.example.nbcompany.entity.BizCollaboration;
 import org.example.nbcompany.entity.BizMeeting;
 import org.example.nbcompany.entity.BizMeetingRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,9 @@ public class MobileService implements org.example.nbcompany.service.MobileServic
     private MobileMapper mobileMapper;
 
     @Override
-    public PageResponse<BizCollaboration> listCollaboration(Integer category, int page, int size) {
+    public PageResponse<MobileBizCollaborationResponse> listCollaboration(Integer category, int page, int size) {
 
-        PageResponse<BizCollaboration> response = new PageResponse<>();
+        PageResponse<MobileBizCollaborationResponse> response = new PageResponse<>();
         response.setCurrent(page);
         response.setRecords(mobileMapper.getCollaborations(category, (page - 1) * size, size));
         response.setTotal(mobileMapper.getTotalCount(category));
@@ -59,9 +59,9 @@ public class MobileService implements org.example.nbcompany.service.MobileServic
     }
 
     @Override
-    public BizCollaboration getCollaboration(Long collaborationId) {
+    public MobileBizCollaborationResponse getCollaboration(Long collaborationId) {
 
-        BizCollaboration collaboration = mobileMapper.findByCollaborationId(collaborationId);
+        MobileBizCollaborationResponse collaboration = mobileMapper.findByCollaborationId(collaborationId);
         return collaboration;
     }
 

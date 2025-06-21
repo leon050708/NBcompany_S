@@ -1,6 +1,7 @@
 package org.example.nbcompany.controller;
 
 import org.example.nbcompany.dto.response.ApiResponse;
+import org.example.nbcompany.dto.response.MobileBizCollaborationResponse;
 import org.example.nbcompany.dto.response.PageResponse;
 import org.example.nbcompany.entity.BizCollaboration;
 import org.example.nbcompany.entity.BizMeeting;
@@ -17,16 +18,16 @@ public class MobileController {
 
 
     @GetMapping("/collaborations")
-    public ApiResponse<PageResponse<BizCollaboration>> getCollaborations(@RequestParam(value = "category", required = false) Integer category,
+    public ApiResponse<PageResponse<MobileBizCollaborationResponse>> getCollaborations(@RequestParam(value = "category", required = false) Integer category,
                                                                          @RequestParam(value = "page", defaultValue = "1") int page,
                                                                          @RequestParam(value = "size", defaultValue = "10") int size) {
-        PageResponse<BizCollaboration> response=mobileService.listCollaboration(category,page,size);
+        PageResponse<MobileBizCollaborationResponse> response=mobileService.listCollaboration(category,page,size);
         // 构造响应体
         return ApiResponse.success("获取成功", response);
     }
 
 
-    @PostMapping("/collaborations/meeting/{meetingId}")
+    @GetMapping("/collaborations/meeting/{meetingId}")
     public ApiResponse<BizMeeting> getMeeting(@PathVariable Long meetingId) {
 
         BizMeeting meeting = mobileService.getMeeting(meetingId);
@@ -58,9 +59,9 @@ public class MobileController {
     }
 
     @GetMapping("/collaborations/{collaborationId}")
-    public ApiResponse<BizCollaboration> getCollaboration(@PathVariable Long collaborationId) {
+    public ApiResponse<MobileBizCollaborationResponse> getCollaboration(@PathVariable Long collaborationId) {
 
-        BizCollaboration collaborationDetails = mobileService.getCollaboration(collaborationId);
+        MobileBizCollaborationResponse collaborationDetails = mobileService.getCollaboration(collaborationId);
         if (collaborationDetails == null) {
             return ApiResponse.error(404, "合作模块不存在");
         }

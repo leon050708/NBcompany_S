@@ -4,9 +4,9 @@
 <mapper namespace="org.example.nbcompany.dao.MobileMapper">
 
     <!-- 查询合作模块列表 -->
-    <select id="getCollaborations" resultType="org.example.nbcompany.entity.BizCollaboration">
-        SELECT id, category, title, summary, externalLink
-        FROM biz_collaborations
+    <select id="getCollaborations" resultType="org.example.nbcompany.dto.response.MobileBizCollaborationResponse">
+        SELECT id, category, title, summary, external_link
+        FROM biz_collaboration
         <where>
             <if test="category != null">
                 AND category = #{category}
@@ -17,7 +17,7 @@
 
     <!-- 查询总记录数 -->
     <select id="getTotalCount" resultType="int">
-        SELECT COUNT(*) FROM biz_collaborations
+        SELECT COUNT(*) FROM biz_collaboration
         <where>
             <if test="category != null">
                  category = #{category}
@@ -27,7 +27,7 @@
 
     <!--查询会议详细信息-->
     <select id="findByMeetingId" resultType="org.example.nbcompany.entity.BizMeeting">
-        SELECT * FROM biz_meeting WHERE id = #{id}
+        SELECT * FROM biz_meeting WHERE id = #{meetingId}
     </select>
 
     <!-- 插入新的会议注册回执 -->
@@ -35,7 +35,7 @@
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO biz_meeting_registration
         (meeting_id, user_id, company, name, gender, phone_number, email,
-         arrival_method, arrival_train_no, arrival_time, registration_at)
+         arrival_method, arrival_train_no, arrival_time, registered_at)
         VALUES
             (#{meetingId}, #{userId}, #{company}, #{name}, #{gender}, #{phoneNumber}, #{email},
              #{arrivalMethod}, #{arrivalTrainNo}, #{arrivalTime}, #{registeredAt})
@@ -47,7 +47,7 @@
         WHERE meeting_id = #{meetingId} AND user_id = #{userId}
     </select>
 
-    <select id="findByCollaborationId" resultType="org.example.nbcompany.entity.BizCollaboration">
+    <select id="findByCollaborationId" resultType="org.example.nbcompany.dto.response.MobileBizCollaborationResponse">
         SELECT id, category,title,summary,content,external_link FROM biz_collaboration WHERE id = #{collaborationId}
     </select>
 
