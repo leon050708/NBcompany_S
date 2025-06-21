@@ -9,7 +9,8 @@ import org.example.nbcompany.service.impl.MobileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/api/v1/mobile")
+@RestController
+@RequestMapping("/api/v1/mobile")
 public class MobileController {
     @Autowired
     private MobileService mobileService;
